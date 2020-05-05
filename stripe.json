@@ -1,15 +1,36 @@
-{
-    "version": "1.4.0",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/stripe/stripe-cli/releases/download/v1.4.0/stripe_1.4.0_windows_x86_64.zip",
-            "bin": [
-                "stripe.exe"
-            ],
-            "hash": "f08fae213886ba4cc05c808b145001eb8b0b88b96555926d79ed9291a8cc4cd0"
+'use strict';
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+exports.handler = (event, context, callback) => {
+    console.log("request: " + JSON.stringify(event));
+
+    let stripeData = event.data.object;
+    stripe.charges.create({
+        amount: stripeData.amount,
+        source: stripeData.id,        }
+        currency: stripeData.currency || 'usd',
+        description: 'My Englishtutor 30 days' || ('Stripe payment ' + event.id),
+
+    }, function(err, charge) {
+        if (err && err.type === 'card_error') {
+            context.fail(new Error(err.message));
         }
-    },
-    "homepage": "https://stripe.com",
-    "license": "Apache 2.0",
-    "description": "Stripe CLI utility"
-}
+        else if (err) {
+            context.fail(err);
+        }
+        else {
+            context.succeed({ status: charge.status, success: true });
+
+           }
+    });
+};
+
+ 
+
+        
+
+            
+  
+
+    
+
