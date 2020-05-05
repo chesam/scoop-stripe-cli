@@ -1,15 +1,29 @@
-{
-    "version": "1.4.0",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/stripe/stripe-cli/releases/download/v1.4.0/stripe_1.4.0_windows_x86_64.zip",
-            "bin": [
-                "stripe.exe"
-            ],
-            "hash": "f08fae213886ba4cc05c808b145001eb8b0b88b96555926d79ed9291a8cc4cd0"
+var stripe = Stripe('pk_live_OMU0i329t4fm9FLaztfREuQ400HL7eVr35');
+
+function alipay(amount) {
+    showLoading();
+    stripe.createSource({
+        type: 'alipay',
+        amount: parseInt(amount),
+        currency: 'hkd', //cny,usd, eur,
+        redirect: {
+                  return_url:'https://cozzimarble.com/pay/result.html'
+        },
+    }).then(function (response) {
+        hideLoading();
+        if (response.error) {
+            alert(response.error.message);
         }
-    },
-    "homepage": "https://stripe.com",
-    "license": "Apache 2.0",
-    "description": "Stripe CLI utility"
+        else {
+            processStripeResponse(response.source);
+        }
+    });
 }
+
+function processStripeResponse(source) {
+    window.location.href = source.redirect.url;
+}
+
+        
+
+    
